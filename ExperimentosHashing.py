@@ -3,10 +3,9 @@ import csv
 import math
 
 import numpy as np
-import pandas
 import matplotlib.pyplot as plt
 from random import shuffle
-import json
+
 dataset2_path = 'CAvideos.csv'
 total_records = 2000
 def string_to_numbers(key):
@@ -101,28 +100,22 @@ def hashing_división(arr, rango):
 
 
 def hashing_multiplicacion(arr, w, r, variaA): #realiza hashing por método de multiplicación
-    A = variaA*int(2 ** w * ((math.sqrt(5) - 1) / 2))
+    if variaA == 1:
+        A = variaA*int(2 ** w * ((math.sqrt(5) - 1) / 2))
+    elif variaA == 2:
+        A = 2 ** w * .5864
+    elif variaA == 3:
+        A = 2 ** w * math.sqrt(5) / 3
     rango = 2 ** r
     new = generar_tabla( rango)
     indices = []
     for s in arr:
-        num = A * s % 2 ** 64
-        index = binario(num, r)
+        temp = bin((int(A) * int(s)) % 2 ** w)[2:]
+        for _ in range(w - r):
+            temp[::-1] + str(0)
+        index = int(temp) % 2 ** r
         new[index].append(s)
         indices.append(index)
-#        cont = 0
-#        num = A * cont + s % 2 ** w
-#        index = binario(num, r)
-#        if index in indices:
-#            while index in indices:
-#                num = A * cont + s % 2 ** w
-#                index = binario(num, r)
-#                cont += 1
-#            new[index].append(s)
-#            indices.append(index)
-#        else:
-#            new[index].append(s)
-#            indices.append(index)
     return new, indices
 
 
@@ -136,24 +129,14 @@ def genera_histograma(arr, title, color): #crea el histograma
 
 
 def busquedas_p5(arr, hash, type, w, r, variaA, color):
-    #r es el valor de m
     buscar = arr
     if type == 'multiplicación':
         A = variaA * int(2 ** w * ((math.sqrt(5) - 1) / 2))
         pasos = []
         for i in buscar:
             cont = 0
-           # cont = 1
-           # sw = False
-           # while sw != True and cont <= len(arr):
             num = A * i % 2 ** w
             index = binario(num, r)
-           #     print(index, cont)
-           #     if len(hash[index]) != 0 and hash[index][0] == i:
-           #         print("ok")
-           #         sw = True
-           #     else:
-           #         cont += 1
             for n in hash[index]:
                 if n == i:
                     break
@@ -163,14 +146,14 @@ def busquedas_p5(arr, hash, type, w, r, variaA, color):
         for k in range(len(buscar)):
             ejex.append(k + 1)
         promedio = sum(pasos) / len(pasos)
-        plt.plot(ejex, pasos, marker = 'o', color = color, label = 'busquedas')
-        plt.axhline(promedio, label = 'promedio de busquedas')
-        plt.legend(loc = 'upper right')
-        plt.xlabel("Número de elementos buscados")
-        plt.ylabel("Pasos hasta encontrar elemento")
         lab = 'busqueda' + str(variaA) + 'x A con m = 2^' + str(r)
-        plt.title(lab)
-        plt.grid(axis='y', color='black', linestyle='dashed')
+        fig, ax = plt.subplots()
+        ax.bar(ejex, pasos)
+        ax.axhline(promedio, label = 'Promedio de busqueda' + str(promedio), color = 'red')
+        ax.legend(loc = 'upper right')
+        ax.set_title(lab)
+        ax.set_ylabel("Frecuencias")
+        ax.set_xlabel("Claves")
         plt.show()
     if type == 'División':
         pasos = []
@@ -186,14 +169,14 @@ def busquedas_p5(arr, hash, type, w, r, variaA, color):
         for k in range(len(buscar)):
             ejex.append(k + 1)
         promedio = sum(pasos) / len(pasos)
-        plt.plot(ejex, pasos, marker='o', color=color, label='busquedas')
-        plt.axhline(promedio, label='promedio de busquedas')
-        plt.legend(loc='upper right')
-        plt.xlabel("Número de elementos buscados")
-        plt.ylabel("Pasos hasta encontrar elemento")
         lab = 'busqueda' + str(variaA) + 'x A con m = 2^' + str(r)
-        plt.title(lab)
-        plt.grid(axis='y', color='black', linestyle='dashed')
+        fig, ax = plt.subplots()
+        ax.bar(ejex, pasos)
+        ax.axhline(promedio, label = 'Promedio de busqueda' + str(promedio), color = 'red')
+        ax.legend(loc = 'upper right')
+        ax.set_title(lab)
+        ax.set_ylabel("Frecuencias")
+        ax.set_xlabel("Claves")
         plt.show()
 
 
@@ -219,15 +202,14 @@ def insericon_p6(arr, hash, type, w, r, variaA, color):
         for k in range(len(buscar)):
             ejex.append(k + 1)
         promedio = sum(pasos) / len(pasos)
-        print(promedio)
-        plt.plot(ejex, pasos, marker='o', color=color, label='inserciones')
-        plt.axhline(promedio, label='promedio de inserciones')
-        plt.legend(loc='upper right')
-        plt.xlabel("Número de elementos insertados")
-        plt.ylabel("Pasos para insertar elemento")
-        lab = 'inserción' + str(variaA) + 'x A con m = 2^' + str(r)
-        plt.title(lab)
-        plt.grid(axis='y', color='black', linestyle='dashed')
+        lab = 'Inserción de elementos' + str(variaA) + 'x A con m = 2^' + str(r)
+        fig, ax = plt.subplots()
+        ax.bar(ejex, pasos)
+        ax.axhline(promedio, label = 'Promedio de inserción' + str(promedio), color = 'red')
+        ax.legend(loc = 'upper right')
+        ax.set_title(lab)
+        ax.set_ylabel("Frecuencias")
+        ax.set_xlabel("Claves")
         plt.show()
     if type == 'División':
         pasos = []
@@ -245,17 +227,15 @@ def insericon_p6(arr, hash, type, w, r, variaA, color):
         for k in range(len(buscar)):
             ejex.append(k + 1)
         promedio = sum(pasos) / len(pasos)
-        print(promedio)
-        plt.plot(ejex, pasos, marker='o', color=color, label='inserciones')
-        plt.axhline(promedio, label='promedio de inserciones')
-        plt.legend(loc='upper right')
-        plt.xlabel("Número de elementos insertados")
-        plt.ylabel("Pasos para insertar elemento")
-        lab = 'inserción' + str(variaA) + 'x A con m = 2^' + str(r)
-        plt.title(lab)
-        plt.grid(axis='y', color='black', linestyle='dashed')
+        lab = 'Inserción de elementos' + str(variaA) + 'x A con m = 2^' + str(r)
+        fig, ax = plt.subplots()
+        ax.bar(ejex, pasos)
+        ax.axhline(promedio, label = 'Promedio de inserción' + str(promedio), color = 'red')
+        ax.legend(loc = 'upper right')
+        ax.set_title(lab)
+        ax.set_ylabel("Frecuencias")
+        ax.set_xlabel("Claves")
         plt.show()
-
 
 
 
@@ -278,14 +258,14 @@ def  eliminación_p7(arr, hash, type, w, r, variaA, color):
         for k in range(len(buscar)):
             ejex.append(k + 1)
         promedio = sum(pasos) / len(pasos)
-        plt.plot(ejex, pasos, marker='o', color=color, label='busquedas')
-        plt.axhline(promedio, label='promedio de busquedas')
-        plt.legend(loc='upper right')
-        plt.xlabel("Número de elementos eliminados")
-        plt.ylabel("Pasos hasta encontrar elemento a eliminar y eliminarlo")
-        lab = 'eliminación' + str(variaA) + 'x A con m = 2^' + str(r)
-        plt.title(lab)
-        plt.grid(axis='y', color='black', linestyle='dashed')
+        lab = 'Eliminación de elementos' + str(variaA) + 'x A con m = 2^' + str(r)
+        fig, ax = plt.subplots()
+        ax.bar(ejex, pasos)
+        ax.axhline(promedio, label = 'Promedio de eliminación' + str(promedio), color = 'red')
+        ax.legend(loc = 'upper right')
+        ax.set_title(lab)
+        ax.set_ylabel("Frecuencias")
+        ax.set_xlabel("Claves")
         plt.show()
     if type == 'Disvisión':
         pasos = []
@@ -302,14 +282,14 @@ def  eliminación_p7(arr, hash, type, w, r, variaA, color):
         for k in range(len(buscar)):
             ejex.append(k + 1)
         promedio = sum(pasos) / len(pasos)
-        plt.plot(ejex, pasos, marker='o', color=color, label='busquedas')
-        plt.axhline(promedio, label='promedio de busquedas')
-        plt.legend(loc='upper right')
-        plt.xlabel("Número de elementos eliminados")
-        plt.ylabel("Pasos hasta encontrar elemento a eliminar y eliminarlo")
-        lab = 'eliminación' + str(variaA) + 'x A con m = 2^' + str(r)
-        plt.title(lab)
-        plt.grid(axis='y', color='black', linestyle='dashed')
+        lab = 'Eliminación de elementos' + str(variaA) + 'x A con m = 2^' + str(r)
+        fig, ax = plt.subplots()
+        ax.bar(ejex, pasos)
+        ax.axhline(promedio, label = 'Promedio de eliminación' + str(promedio), color = 'red')
+        ax.legend(loc = 'upper right')
+        ax.set_title(lab)
+        ax.set_ylabel("Frecuencias")
+        ax.set_xlabel("Claves")
         plt.show()
 
 
@@ -324,14 +304,14 @@ def frecuencias(arr, indices,title):
     for i in arr:
         cantidades.append(len(i))
     plt.hist(cantidades, 200, color='blue', ec='black') #genera el histograma de la cantidad de elementos por slot
-    plt.title(title)
+    plt.title("Histograma de cantidad de elementos por Slot")
     plt.show()
     axis_x = np.arange(1, len(cantidades) + 1) #genera gráfica de la distribución real de la tabla hash
     fig, ax = plt.subplots()
     ax.bar(axis_x, cantidades)
-    newtitle = "Otro" + title
+    newtitle = "Distribución real de tabla Hash" + title
     ax.set_title(newtitle)
-    ax.set_ylabel("Frecuencias")
+    ax.set_ylabel("Elementos")
     ax.set_xlabel("Claves")
     plt.show()
 
@@ -339,16 +319,15 @@ arr = abrir(año= 2020)
 lis = []
 for k in arr:
     b = int(k % 2**31)
-    #b = b // 2**23
     lis.append(b)
-w = 64
+w = 28
 usadas, nousadas = dividirllaves(lis)
 nousadas7 = nousadas[0:len(nousadas) // 2]
 tablashash = []
 indiceshash = []
 shuffle(usadas)
 buscar = usadas[0: int(len(arr) * .2)]
-m = [12,13,14]
+m = [11,12,13]
 A = [1,2,3]
 color = ['blue', 'brown', 'green']
 for i in A: #experimentos con hash de multiplicación
@@ -366,6 +345,7 @@ for i in A: #experimentos con hash de multiplicación
 M = [787,859,1152]
 cont = 0
 i = 0
+print("AHORA SI HDTPTM")
 for n in M: # experimentos  con hash de división
     new, indices = hashing_división(usadas, n)
     type = 'División'
